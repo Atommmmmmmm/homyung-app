@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>호명반응 친구들</title>
+
+<style>
+body{
+margin:0;
+font-family:'맑은 고딕',sans-serif;
+background:#eaf6ff;
+text-align:center;
+}
+
+header{
+background:#4aa3ff;
+color:white;
+padding:18px;
+font-size:32px;
+font-weight:bold;
+}
+
+.container{
+padding:20px;
+max-width:800px;
+margin:auto;
+}
+
+input{
+padding:12px;
+font-size:22px;
+border-radius:12px;
+border:2px solid #ccc;
+text-align:center;
+}
+
+.character{
+width:220px;
+height:220px;
+margin:25px auto;
+background:white;
+border-radius:50%;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:120px;
+box-shadow:0 4px 15px rgba(0,0,0,0.15);
+transition:0.3s;
+}
+
+.jump{
+animation:bounce 0.6s;
+}
+
+@keyframes bounce{
+0%{transform:translateY(0);}
+30%{transform:translateY(-40px);}
+60%{transform:translateY(0);}
+100%{transform:translateY(-10px);}
+}
+
+.name{
+font-size:36px;
+font-weight:bold;
+}
+
+button{
+padding:14px 22px;
+margin:8px;
+font-size:20px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+}
+
+.blue{
+background:#4aa3ff;
+color:white;
+}
+
+.green{
+background:#4caf50;
+color:white;
+}
+
+.orange{
+background:#ff9800;
+color:white;
+}
+
+.purple{
+background:#9c27b0;
+color:white;
+}
+
+.message{
+margin-top:20px;
+font-size:28px;
+font-weight:bold;
+min-height:80px;
+}
+
+.score{
+font-size:42px;
+margin-top:10px;
+}
+</style>
+</head>
+<body>
+
+<header>🐾 호명반응 친구들</header>
+
+<div class="container">
+
+<div>
+<input id="childName" placeholder="아이 이름 입력">
+</div>
+
+<div class="score">
+⭐ <span id="stars">0</span>
+</div>
+
+<div id="animal" class="character">🐰</div>
+
+<div id="animalName" class="name">토끼</div>
+
+<div>
+
+<button class="blue" onclick="randomAnimal()">
+다른 동물
+</button>
+
+<button class="orange" onclick="demoMode()">
+친구 시범 보기
+</button>
+
+<button class="green" onclick="callChild()">
+내 차례
+</button>
+
+<button class="purple" onclick="callAnimalMode()">
+동물 부르기
+</button>
+
+</div>
+
+<div id="message" class="message">
+안녕!
+</div>
+
+</div>
+
+<script>
+
+let stars=0;
+
+const animals=[
+
+{
+name:"토끼",
+emoji:"🐰",
+pitch:1.8,
+rate:1.15,
+call:"깡총깡총! ",
+good:"와아! 정말 잘했어!"
+},
+
+{
+name:"펭귄",
+emoji:"🐧",
+pitch:1.3,
+rate:0.95,
+call:"뒤뚱뒤뚱 ",
+good:"멋지다!"
+},
+
+{
+name:"곰",
+emoji:"🐻",
+pitch:0.8,
+rate:0.85,
+call:"어흥! ",
+good:"최고야!"
+},
+
+{
+name:"여우",
+emoji:"🦊",
+pitch:1.5,
+rate:1.0,
+call:"안녕! ",
+good:"정말 똑똑하네!"
+},
+
+{
+name:"원숭이",
+emoji:"🐵",
+pitch:1.9,
+rate:1.2,
+call:"우끼끼! ",
+good:"신난다!"
+},
+
+{
+name:"강아지",
+emoji:"🐶",
+pitch:1.6,
+rate:1.1,
+call:"멍멍! ",
+good:"참 잘했어!"
+},
+
+{
+name:"고양이",
+emoji:"🐱",
+pitch:1.7,
+rate:1.0,
+call:"야옹! ",
+good:"기분 좋은걸!"
+},
+
+{
+name:"판다",
+emoji:"🐼",
+pitch:1.2,
+rate:0.9,
+call:"안녕 친구야! ",
+good:"훌륭해!"
+},
+
+{
+name:"코끼리",
+emoji:"🐘",
+pitch:0.7,
+rate:0.8,
+call:"뚜벅뚜벅 ",
+good:"정말 잘했구나!"
+},
+
+{
+name:"공룡",
+emoji:"🦖",
+pitch:0.9,
+rate:1.0,
+call:"크르릉! ",
+good:"대단해!"
+}
+
+];
+
+let current=0;
+
+function updateAnimal(){
+
+document.getElementById("animal").textContent =
+animals[current].emoji;
+
+document.getElementById("animalName").textContent =
+animals[current].name;
+
+}
+
+function randomAnimal(){
+
+current=Math.floor(Math.random()*animals.length);
+
+updateAnimal();
+
+}
+
+function jump(){
+
+const a=document.getElementById("animal");
+
+a.classList.remove("jump");
+
+setTimeout(()=>{
+a.classList.add("jump");
+},10);
+
+}
+
+function speak(text){
+
+const animal=animals[current];
+
+const u=new SpeechSynthesisUtterance(text);
+
+u.lang="ko-KR";
+u.pitch=animal.pitch;
+u.rate=animal.rate;
+
+speechSynthesis.speak(u);
+
+}
+
+function demoMode(){
+
+const child=
+document.getElementById("childName").value.trim();
+
+if(!child){
+alert("아이 이름을 입력해주세요");
+return;
+}
+
+document.getElementById("message").innerHTML=
+"친구들이 시범을 보여줄게!";
+
+speak(
+animals[current].call+
+child+"야!"
+);
+
+jump();
+
+setTimeout(()=>{
+
+speak("네!");
+
+document.getElementById("message").innerHTML=
+"친구 : 네!";
+
+},2200);
+
+}
+
+function callChild(){
+
+const child=
+document.getElementById("childName").value.trim();
+
+if(!child){
+alert("아이 이름을 입력해주세요");
+return;
+}
+
+document.getElementById("message").innerHTML=
+animals[current].name+
+"이(가) 부르는 중";
+
+speak(
+animals[current].call+
+child+"야!"
+);
+
+jump();
+
+setTimeout(()=>{
+listenForYes();
+},2500);
+
+}
+
+function listenForYes(){
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert("크롬 브라우저를 사용해주세요");
+return;
+}
+
+const rec=new SpeechRecognition();
+
+rec.lang="ko-KR";
+rec.start();
+
+document.getElementById("message").innerHTML=
+"👂 듣고 있어";
+
+rec.onresult=function(e){
+
+const text=
+e.results[0][0].transcript.trim();
+
+if(text.startsWith("네")){
+
+stars++;
+
+document.getElementById("stars").textContent=
+stars;
+
+document.getElementById("message").innerHTML=
+"🎉 성공!<br>"+text;
+
+jump();
+
+setTimeout(()=>{
+
+speak(animals[current].good);
+
+},500);
+
+}
+else{
+
+document.getElementById("message").innerHTML=
+"다시 해보자";
+
+speak("네 라고 말해보자");
+
+}
+
+}
+
+}
+
+function callAnimalMode(){
+
+document.getElementById("message").innerHTML=
+"동물 이름을 불러줘";
+
+const SpeechRecognition=
+window.SpeechRecognition||
+window.webkitSpeechRecognition;
+
+if(!SpeechRecognition){
+alert("크롬 브라우저를 사용해주세요");
+return;
+}
+
+const rec=new SpeechRecognition();
+
+rec.lang="ko-KR";
+
+rec.start();
+
+rec.onresult=function(e){
+
+const text=
+e.results[0][0].transcript.replace(/\s/g,'');
+
+let found=null;
+
+animals.forEach((animal,index)=>{
+
+if(text.includes(animal.name)){
+
+found=index;
+
+}
+
+});
+
+if(found!==null){
+
+current=found;
+
+updateAnimal();
+
+jump();
+
+setTimeout(()=>{
+
+speak("네!");
+
+document.getElementById("message").innerHTML=
+animals[current].name+
+" : 네!";
+
+},500);
+
+}
+else{
+
+document.getElementById("message").innerHTML=
+"토끼, 곰, 펭귄처럼 동물 이름을 말해줘";
+
+}
+
+};
+
+}
+
+updateAnimal();
+
+</script>
+
+</body>
+</html>
